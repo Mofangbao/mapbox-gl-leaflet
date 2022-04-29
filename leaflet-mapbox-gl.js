@@ -11,7 +11,7 @@
     }
 }(this, function (L, mapboxgl) {
     L.MapboxGL = L.Layer.extend({
-            options: {
+        options: {
             updateInterval: 32,
             // How much to extend the overlay view (relative to map size)
             // e.g. 0.1 would be 10% of map view in each direction
@@ -41,7 +41,7 @@
 
             var paneName = this.getPaneName();
             map.getPane(paneName).appendChild(this._container);
-            
+
             this._initGL();
 
             this._offset = this._map.containerPointToLayerPoint([0, 0]);
@@ -50,7 +50,7 @@
             if (map.options.zoomAnimation) {
                 L.DomEvent.on(map._proxy, L.DomUtil.TRANSITION_END, this._transitionEnd, this);
             }
-            
+
             map._addZoomLimit(this);
         },
 
@@ -82,7 +82,8 @@
         },
 
         getSize: function () {
-            return this._map.getSize().multiplyBy(1 + this.options.padding * 2);
+            const size = this._map.getSize().multiplyBy(1 + this.options.padding * 2);
+            return L.point(parseInt(size.x.toFixed(0)), parseInt(size.y.toFixed(0)));
         },
 
         getBounds: function () {
@@ -97,18 +98,18 @@
         getContainer: function () {
             return this._container;
         },
-        
+
         // returns the pane name set in options if it is a valid pane, defaults to tilePane
         getPaneName: function () {
-            return this._map.getPane(this.options.pane) ? this.options.pane : 'tilePane'; 
+            return this._map.getPane(this.options.pane) ? this.options.pane : 'tilePane';
         },
-        
+
         _initContainer: function () {
             var container = this._container = L.DomUtil.create('div', 'leaflet-gl-layer');
 
             var size = this.getSize();
             var offset = this._map.getSize().multiplyBy(this.options.padding);
-            container.style.width  = size.x + 'px';
+            container.style.width = size.x + 'px';
             container.style.height = size.y + 'px';
 
             var topLeft = this._map.containerPointToLayerPoint([0, 0]).subtract(offset);
@@ -174,16 +175,16 @@
             this._transformGL(gl);
 
             if (gl.transform.width !== size.x || gl.transform.height !== size.y) {
-                container.style.width  = size.x + 'px';
+                container.style.width = size.x + 'px';
                 container.style.height = size.y + 'px';
-                if (gl._resize !== null && gl._resize !== undefined){
+                if (gl._resize !== null && gl._resize !== undefined) {
                     gl._resize();
                 } else {
                     gl.resize();
                 }
             } else {
                 // older versions of mapbox-gl surfaced update publicly
-                if (gl._update !== null && gl._update !== undefined){
+                if (gl._update !== null && gl._update !== undefined) {
                     gl._update();
                 } else {
                     gl.update();
@@ -221,7 +222,7 @@
             var topLeft = this._map.project(e.center, e.zoom)
                 ._subtract(viewHalf)
                 ._add(this._map._getMapPanePos()
-                .add(padding))._round();
+                    .add(padding))._round();
             var offset = this._map.project(this._map.getBounds().getNorthWest(), e.zoom)
                 ._subtract(topLeft);
 
